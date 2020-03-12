@@ -1,3 +1,5 @@
+package com.example.PSO;
+
 import com.example.PSO.models.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
