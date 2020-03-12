@@ -1,4 +1,4 @@
-package models;
+package com.example.PSO.models;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;

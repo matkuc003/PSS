@@ -1,4 +1,4 @@
-package models;
+package com.example.PSO.models;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class Delegation {
     private Integer supperNumber = 0;
     private TransportType transportType = TransportType.AUTO;
     private Double ticketPrice;
-    private AutoCapacity autoCapacity;
+   private AutoCapacity autoCapacity;
     private Integer km;
     private Double accomodationPrice;
     private Double otherTicketsPrice;

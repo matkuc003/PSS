@@ -1,8 +1,7 @@
-import models.Role;
+import com.example.PSO.models.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import repositories.RoleRepo;
+import com.example.PSO.repositories.RoleRepo;
 
 import javax.annotation.PostConstruct;
 

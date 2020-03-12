@@ -1,6 +1,6 @@
-package repositories;
+package com.example.PSO.repositories;
 
-import models.Role;
+import com.example.PSO.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

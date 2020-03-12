@@ -1,4 +1,4 @@
-package models;
+package com.example.PSO.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Data
 @Table
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Role {
     @Id
