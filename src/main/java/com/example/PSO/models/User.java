@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
-@Entity
-@Table
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Entity(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +36,9 @@ public class User {
     private boolean status = true;
     @Column
     private LocalDate registrationDate = LocalDate.now();
-    @ManyToMany
-    private List<Role> role;
-    @OneToMany
+    @ManyToMany(mappedBy = "users")
+    private Set<Role> roles;
+    @OneToMany(mappedBy = "user")
     private List<Delegation> delegations;
 
 }

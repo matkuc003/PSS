@@ -10,11 +10,10 @@ import org.springframework.context.annotation.Bean;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Entity(name = "delegations")
 public class Delegation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,5 +38,6 @@ public class Delegation {
     private Double otherOutlayDesc;
     private Double otherOutlayPrice;
 
-    
+    @ManyToOne
+    private User user;
 }
