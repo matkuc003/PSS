@@ -13,7 +13,7 @@ public class testDAO {
     RoleRepo roleRepo;
     @PostConstruct
     public void init() {
-        save(new Role(0l,"ROLE_USER"));
+        save(new Role(0l,"ROLE_USER",null));
     }
 public boolean save (Role role){
     roleRepo.save(role);
