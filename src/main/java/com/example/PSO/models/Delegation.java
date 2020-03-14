@@ -33,9 +33,9 @@ public class Delegation {
     @Enumerated(EnumType.STRING)
     private AutoCapacity autoCapacity;
     private Integer km;
-    private Double accomodationPrice;
+    private Double accommodationPrice;
     private Double otherTicketsPrice;
-    private Double otherOutlayDesc;
+    private String otherOutlayDesc;
     private Double otherOutlayPrice;
 
     @ManyToOne
