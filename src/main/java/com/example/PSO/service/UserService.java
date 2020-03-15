@@ -1,14 +1,19 @@
 package com.example.PSO.service;
 
+import com.example.PSO.models.Role;
 import com.example.PSO.models.User;
+import com.example.PSO.repositories.RoleRepo;
 import com.example.PSO.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,8 +28,8 @@ public class UserService {
         if (userRepo.findUserByEmail(user.getEmail()).isPresent())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        User saveUser = userRepo.save(user);
-        return new ResponseEntity<>(saveUser, HttpStatus.OK);
+        user = userRepo.save(user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     public List<User> getAllUser() {
@@ -47,5 +52,12 @@ public class UserService {
 
         userRepo.deleteById(userId);
         return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    public List<User> getAllUsersByRoleName(String roleName) {
+        return userRepo.findAll()
+                .stream()
+                .filter(u -> u.getRoles().stream().anyMatch(r -> r.getRoleName().equals(roleName)))
+                .collect(Collectors.toList());
     }
 }

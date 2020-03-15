@@ -33,8 +33,13 @@ public class UserController {
         return userService.changePassword(userId, newPassword);
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Boolean> deleteUserById(@PathVariable long userId) {
         return userService.deleteUserById(userId);
+    }
+
+    @GetMapping("/byRole/{roleName}")
+    public List<User> getAllUsersByRoleName(@PathVariable String roleName) {
+        return userService.getAllUsersByRoleName(roleName);
     }
 }
