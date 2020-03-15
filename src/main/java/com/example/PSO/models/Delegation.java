@@ -1,11 +1,10 @@
 package com.example.PSO.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -39,5 +38,12 @@ public class Delegation {
     private Double otherOutlayPrice;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
+
+    public Delegation(LocalDate dateTimeStart, LocalDate dateTimeStop, User user) {
+        this.dateTimeStart = dateTimeStart;
+        this.dateTimeStop = dateTimeStop;
+        this.user = user;
+    }
 }
