@@ -37,4 +37,19 @@ public class DelegationController {
     public List<Delegation> getAllDelegation() {
         return delegationService.getAllDelegation();
     }
+
+    @GetMapping("/all/orderByDateStart")
+    public List<Delegation> getAllDelegationsOrderByDateStartDesc() {
+        return delegationService.getAllDelegationsOrderByDateStartDesc();
+    }
+
+    @GetMapping("/byUser/{userId}")
+    public List<Delegation> getDelegationByUser(@PathVariable long userId) {
+        return delegationService.getAllDelegationByUser(userId);
+    }
+
+    @GetMapping("/byUser/{userId}/orderByDateStart")
+    public List<Delegation> getDelByUserOrderByDateStartDesc(@PathVariable long userId) {
+        return delegationService.getAllDelByUserOrderByDateStartDesc(userId);
+    }
 }

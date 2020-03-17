@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DelegationService {
@@ -54,5 +56,23 @@ public class DelegationService {
 
     public List<Delegation> getAllDelegation() {
         return delegationRepo.findAll();
+    }
+
+    public List<Delegation> getAllDelegationByUser(long userId) {
+        return delegationRepo.getAllByUser(userRepo.findById(userId).get());
+    }
+
+    public List<Delegation> getAllDelegationsOrderByDateStartDesc() {
+        return this.getAllDelegation()
+                .stream()
+                .sorted(Comparator.comparing(Delegation::getDateTimeStart, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Delegation> getAllDelByUserOrderByDateStartDesc(long userId) {
+        return this.getAllDelegationByUser(userId)
+                .stream()
+                .sorted(Comparator.comparing(Delegation::getDateTimeStart, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
     }
 }
