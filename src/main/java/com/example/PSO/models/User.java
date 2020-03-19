@@ -18,7 +18,7 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long uid;
     @NotNull
     private String companyName;
     @NotNull
@@ -37,7 +37,11 @@ public class User {
     private boolean status = true;
     @Column
     private LocalDate registrationDate = LocalDate.now();
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "uid"),
+            inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName ="rid"))
     private Set<Role> roles = new HashSet<>();
     @OneToMany(mappedBy = "user")
     private List<Delegation> delegations;
