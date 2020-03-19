@@ -35,9 +35,15 @@ public class DelegationService {
         return new ResponseEntity<>(delegation, HttpStatus.OK);
     }
 
-    public ResponseEntity<Boolean> removeDelegation(long delegationId) {
-        if (delegationRepo.findById(delegationId).isEmpty())
+    public ResponseEntity<Boolean> removeDelegation(long userId, long delegationId) {
+        Optional<User> user = userRepo.findById(userId);
+        if(user.isEmpty())
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        Optional<Delegation> delegation = delegationRepo.findById(delegationId);
+        if (delegation.isEmpty())
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        if (!delegation.get().getUser().equals(user.get()))
+            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
 
         delegationRepo.deleteById(delegationId);
         return new ResponseEntity<>(true, HttpStatus.OK);

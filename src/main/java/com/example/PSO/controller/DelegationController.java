@@ -23,9 +23,9 @@ public class DelegationController {
         return delegationService.addDelegation(userId, delegation);
     }
 
-    @DeleteMapping("/{delegationId}")
-    public ResponseEntity<Boolean> removeDelegation(@PathVariable long delegationId) {
-        return delegationService.removeDelegation(delegationId);
+    @DeleteMapping("/{delegationId}/{userId}")
+    public ResponseEntity<Boolean> removeDelegation(@PathVariable long userId, @PathVariable long delegationId) {
+        return delegationService.removeDelegation(userId, delegationId);
     }
 
     @PutMapping("/{delegationId}")

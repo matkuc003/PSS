@@ -1,16 +1,12 @@
 package com.example.PSO.service;
 
-import com.example.PSO.models.Role;
 import com.example.PSO.models.User;
-import com.example.PSO.repositories.RoleRepo;
 import com.example.PSO.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,10 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private UserRepo userRepo;
+    private DelegationService delegationService;
 
     @Autowired
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, DelegationService delegationService) {
         this.userRepo = userRepo;
+        this.delegationService = delegationService;
     }
 
     public ResponseEntity<User> registerUser(User user) {
@@ -47,9 +45,12 @@ public class UserService {
     }
 
     public ResponseEntity<Boolean> deleteUserById(long userId) {
-        if (userRepo.findById(userId).isEmpty())
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isEmpty())
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
 
+        user.get().getDelegations().stream().forEach(d -> delegationService.removeDelegation(userId, d.getId()));
+        user.get().getRoles().stream().forEach(r -> user.get().removeRole(r));
         userRepo.deleteById(userId);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
