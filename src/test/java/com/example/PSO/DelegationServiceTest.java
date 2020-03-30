@@ -123,7 +123,7 @@ public class DelegationServiceTest {
         Assertions.assertEquals(changed, found.get());
     }
     @Test
-    public void deleteUserTest() {
+    public void deleteDelegationTest() {
         Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(5),userRepo.getOne(1l));
         given = delegationRepo.save(given);
         ResponseEntity<Boolean> response = delegationService.removeDelegation(1l,given.getId());
