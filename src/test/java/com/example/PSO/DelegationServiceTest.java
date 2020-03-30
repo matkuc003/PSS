@@ -90,13 +90,14 @@ public class DelegationServiceTest {
 
     @Test
     public void getAllDelegationsOrderByDateStartDescTest() {
-        List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(0), delegations.get(1), delegations.get(2)));
+        List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(2), delegations.get(1), delegations.get(0)));
         List<Delegation> found = delegationService.getAllDelegationsOrderByDateStartDesc();
+        found.forEach(f-> System.out.println(f));
         Assertions.assertEquals(allDelegations, found);
     }
     @Test
     public void getAllDelByUserOrderByDateStartDescTest() {
-        List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(1), delegations.get(2)));
+        List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(2), delegations.get(1)));
         List<Delegation> found = delegationService.getAllDelByUserOrderByDateStartDesc(2);
         Assertions.assertEquals(allDelegations, found);
     }
