@@ -78,8 +78,8 @@ public class DelegationServiceTest {
 
     @Test
     public void addDelegationTest() {
-        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(5),userRepo.getOne(3l));
-        ResponseEntity<Delegation> response = delegationService.addDelegation(1,given);
+        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(8),userRepo.getOne(2l));
+        ResponseEntity<Delegation> response = delegationService.addDelegation(2,given);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             given = response.getBody();
         }
