@@ -5,6 +5,7 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ public class Delegation {
 
     @ManyToOne
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 
     public Delegation(LocalDate dateTimeStart, LocalDate dateTimeStop, User user) {

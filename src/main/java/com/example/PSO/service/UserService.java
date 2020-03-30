@@ -49,8 +49,10 @@ public class UserService {
         if (user.isEmpty())
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
 
-        user.get().getDelegations().stream().forEach(d -> delegationService.removeDelegation(userId, d.getId()));
-        user.get().getRoles().stream().forEach(r -> user.get().removeRole(r));
+        if (user.get().getDelegations() != null)
+            user.get().getDelegations().stream().forEach(d -> delegationService.removeDelegation(userId, d.getId()));
+        if (user.get().getRoles() != null)
+            user.get().getRoles().stream().forEach(r -> user.get().removeRole(r));
         userRepo.deleteById(userId);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

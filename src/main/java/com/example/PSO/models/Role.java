@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Role {
     private String roleName = "ROLE_USER";
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
+    @ToString.Exclude
     private List<User> users = new ArrayList<>();
 
     public Role(String roleName) {
