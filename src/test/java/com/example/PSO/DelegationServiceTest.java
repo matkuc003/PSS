@@ -7,9 +7,7 @@ import com.example.PSO.repositories.DelegationRepo;
 import com.example.PSO.repositories.RoleRepo;
 import com.example.PSO.repositories.UserRepo;
 import com.example.PSO.service.DelegationService;
-import com.example.PSO.service.UserService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +35,13 @@ public class DelegationServiceTest {
     @Autowired
     private DelegationRepo delegationRepo;
 
+
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private RoleRepo roleRepo;
     private List<Delegation> delegations = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
     @Before
     public void setUp() {
         Role r1 = new Role("ROLE_USER");
@@ -56,19 +56,25 @@ public class DelegationServiceTest {
         u1 = userRepo.save(u1);
         u2 = userRepo.save(u2);
         u3 = userRepo.save(u3);
-        Delegation d1 = new Delegation(LocalDate.now(), LocalDate.now().plusDays(5), userRepo.getOne(1l));
-        Delegation d2 = new Delegation(LocalDate.now().plusDays(2), LocalDate.now().plusDays(6), userRepo.getOne(2l));
-        Delegation d3 = new Delegation(LocalDate.now().plusDays(3), LocalDate.now().plusDays(7), userRepo.getOne(2l));
+        Delegation d1 = new Delegation(LocalDate.now(), LocalDate.now().plusDays(5), u1);
+        Delegation d2 = new Delegation(LocalDate.now().plusDays(2), LocalDate.now().plusDays(6), u2);
+        Delegation d3 = new Delegation(LocalDate.now().plusDays(3), LocalDate.now().plusDays(7), u2);
         d1 = delegationRepo.save(d1);
         d2 = delegationRepo.save(d2);
         d3 = delegationRepo.save(d3);
         delegations.addAll(Arrays.asList(d1, d2, d3));
-
+        users.addAll(Arrays.asList(u1, u2, u3));
 
         u1.addRole(r1);
         u1.addRole(r2);
         u2.addRole(r2);
         u3.addRole(r1);
+    }
+    @After
+    public void after(){
+        delegations.clear();
+        delegationRepo.deleteAll();
+
     }
     @Test
     public void getAllDelegationTest() {
@@ -78,8 +84,8 @@ public class DelegationServiceTest {
 
     @Test
     public void addDelegationTest() {
-        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(8),userRepo.getOne(2l));
-        ResponseEntity<Delegation> response = delegationService.addDelegation(2,given);
+        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(8),users.get(0));
+        ResponseEntity<Delegation> response = delegationService.addDelegation(users.get(0).getUid(),given);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             given = response.getBody();
         }
@@ -92,13 +98,12 @@ public class DelegationServiceTest {
     public void getAllDelegationsOrderByDateStartDescTest() {
         List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(2), delegations.get(1), delegations.get(0)));
         List<Delegation> found = delegationService.getAllDelegationsOrderByDateStartDesc();
-        found.forEach(f-> System.out.println(f));
         Assertions.assertEquals(allDelegations, found);
     }
     @Test
     public void getAllDelByUserOrderByDateStartDescTest() {
         List<Delegation> allDelegations = new ArrayList<>(Arrays.asList(delegations.get(2), delegations.get(1)));
-        List<Delegation> found = delegationService.getAllDelByUserOrderByDateStartDesc(2);
+        List<Delegation> found = delegationService.getAllDelByUserOrderByDateStartDesc(users.get(1).getUid());
         Assertions.assertEquals(allDelegations, found);
     }
     @Test
@@ -123,9 +128,9 @@ public class DelegationServiceTest {
     }
     @Test
     public void deleteDelegationTest() {
-        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(5),userRepo.getOne(2l));
+        Delegation given = new Delegation(LocalDate.now(),LocalDate.now().plusDays(5),users.get(2));
         given = delegationRepo.save(given);
-        ResponseEntity<Boolean> response = delegationService.removeDelegation(2l,given.getId());
+        ResponseEntity<Boolean> response = delegationService.removeDelegation(users.get(2).getUid(),given.getId());
         Assertions.assertTrue(response.getBody());
     }
 }
