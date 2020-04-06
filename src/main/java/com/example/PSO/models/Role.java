@@ -21,7 +21,7 @@ public class Role {
     private Long rid;
     @Column
     private String roleName = "ROLE_USER";
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     @JsonIgnore
     @ToString.Exclude
     private List<User> users = new ArrayList<>();
