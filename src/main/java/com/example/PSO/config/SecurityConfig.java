@@ -34,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/user/register").permitAll()
                 .and().authorizeRequests().antMatchers("/api/user/all").hasRole("ADMIN")
                 .and().authorizeRequests().antMatchers("/api/delegation/**").authenticated()
-                .and().formLogin().permitAll();
+                .and().authorizeRequests().antMatchers("/panel").authenticated()
+                .and().formLogin().defaultSuccessUrl("/panel").permitAll()
+                .and().logout().logoutSuccessUrl("/login");
     }
 }
