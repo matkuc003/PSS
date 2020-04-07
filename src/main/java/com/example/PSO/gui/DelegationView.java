@@ -28,12 +28,15 @@ public class DelegationView extends HorizontalLayout {
         setSpacing(true);
         setSizeFull();
         FormLayout settingFormLayout = new FormLayout();
+        HorizontalLayout horizontaLayout = new HorizontalLayout();
         settingFormLayout.setMargin(new MarginInfo(false, true));
 
         ComboBox<Delegation> delegationsList = new ComboBox<>();
-        List<Delegation> delegationListToCB = delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid());
-        delegationsList.setItems(delegationListToCB);
-        delegationsList.setValue(delegationListToCB.get(0));
+        delegationsList.setTextInputAllowed(false);
+        delegationsList.setEmptySelectionAllowed(false);
+        AtomicReference<List<Delegation>> delegationListToCB = new AtomicReference<>(delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid()));
+        delegationsList.setItems(delegationListToCB.get());
+        delegationsList.setValue(delegationListToCB.get().get(0));
         AtomicReference<Delegation> chosenDelegation = new AtomicReference<>(delegationsList.getValue());
 
         TextField descriptionTextField = new TextField("Description", chosenDelegation.get().getDescription()+"");
@@ -60,6 +63,7 @@ public class DelegationView extends HorizontalLayout {
         TextField otherOutlayPriceTextField = new TextField("otherOutlayPrice", chosenDelegation.get().getOtherTicketsPrice().toString());
 
         Button saveDelegation = new Button("Save");
+        Button deleteDelegation = new Button("Delete");
         saveDelegation.addClickListener(clickEvent ->
         {
             chosenDelegation.set(delegationsList.getValue());
@@ -83,9 +87,7 @@ public class DelegationView extends HorizontalLayout {
 
 
             delegationService.changeDelegation(chosenDelegation.get().getId(), chosenDelegation.get());
-            delegationListToCB.clear();
-            List<Delegation> newListofDelegation = delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid());
-            delegationsList.setItems(newListofDelegation);
+            delegationsList.getDataProvider().refreshAll();
             Notification.show("All changes has  been saved.", Notification.Type.HUMANIZED_MESSAGE);
         });
         delegationsList.addValueChangeListener(delegationValueChangeEvent ->
@@ -110,8 +112,16 @@ public class DelegationView extends HorizontalLayout {
             otherOutlayPriceTextField.setValue(chosenDelegation.get().getOtherOutlayPrice().toString());
         });
 
-
-        settingFormLayout.addComponents(delegationsList,descriptionTextField,dateTimeStartDateField,dateTimeStopDateField,
+            deleteDelegation.addClickListener(clickEvent ->
+            {
+               delegationService.removeDelegation(loggedUser.getUid(),chosenDelegation.get().getId());
+               delegationListToCB.get().remove(chosenDelegation);
+                delegationsList.setItems(delegationListToCB.get());
+                delegationsList.getDataProvider().refreshAll();
+                Notification.show("Delegetion has been deleted", Notification.Type.HUMANIZED_MESSAGE);
+            });
+        horizontaLayout.addComponents(delegationsList,deleteDelegation);
+        settingFormLayout.addComponents(horizontaLayout,descriptionTextField,dateTimeStartDateField,dateTimeStopDateField,
                 travelDietAmountTextField,breakfastNumberTextField,dinnerNumberTextField,supperNumberTextField,transportTypeEnum,autoCapacityEnum,kmTextField,accommodationPriceTextField,otherTicketsPriceTextField,
                 otherOutlayDescTextField,otherOutlayPriceTextField,saveDelegation);
         addComponent(settingFormLayout);
