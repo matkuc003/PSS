@@ -29,14 +29,14 @@ public class Delegation {
     private Integer supperNumber = 0;
     @Enumerated(EnumType.STRING)
     private TransportType transportType = TransportType.AUTO;
-    private Double ticketPrice;
+    private Double ticketPrice=0.0;
     @Enumerated(EnumType.STRING)
-    private AutoCapacity autoCapacity;
-    private Integer km;
-    private Double accommodationPrice;
-    private Double otherTicketsPrice;
+    private AutoCapacity autoCapacity = AutoCapacity.LESS900;
+    private Integer km =0;
+    private Double accommodationPrice=0.0;
+    private Double otherTicketsPrice=0.0;
     private String otherOutlayDesc;
-    private Double otherOutlayPrice;
+    private Double otherOutlayPrice=0.0;
 
     @ManyToOne
     @JsonIgnore
