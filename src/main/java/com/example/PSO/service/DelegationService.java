@@ -42,7 +42,7 @@ public class DelegationService {
         Optional<Delegation> delegation = delegationRepo.findById(delegationId);
         if (delegation.isEmpty())
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        if (!delegation.get().getUser().equals(user.get()))
+        if (!delegation.get().getUser().getEmail().equals(user.get().getEmail()))
             return new ResponseEntity<>(false, HttpStatus.CONFLICT);
 
         delegationRepo.deleteById(delegationId);

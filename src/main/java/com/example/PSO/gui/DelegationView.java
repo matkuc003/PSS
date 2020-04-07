@@ -114,7 +114,7 @@ public class DelegationView extends HorizontalLayout {
 
             deleteDelegation.addClickListener(clickEvent ->
             {
-               delegationService.removeDelegation(loggedUser.getUid(),chosenDelegation.get().getId());
+               delegationService.removeDelegation(loggedUser.getUid(),chosenDelegation.get().getId()); //TODO validation
                delegationListToCB.get().remove(chosenDelegation);
                 delegationsList.setItems(delegationListToCB.get());
                 delegationsList.getDataProvider().refreshAll();

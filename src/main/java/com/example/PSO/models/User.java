@@ -48,7 +48,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "uid"),
             inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName ="rid"))
     private Set<Role> roles = new HashSet<>();
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Delegation> delegations;
 
     public void addRole(Role role) {
