@@ -1,17 +1,32 @@
 package com.example.PSO.gui;
 
 import com.example.PSO.models.User;
+import com.example.PSO.service.DelegationService;
+import com.example.PSO.service.UserService;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Title("User Panel")
 @SpringUI(path = "/panel")
 public class MainView extends UI {
+
+    private UserService userService;
+    private DelegationService delegationService;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public MainView(UserService userService, DelegationService delegationService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.delegationService = delegationService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private User loggedUser;
 
@@ -49,8 +64,7 @@ public class MainView extends UI {
         profileButton.setWidth(200, Unit.PIXELS);
         profileButton.addClickListener(clickEvent -> {
                     mainView.removeAllComponents();
-                    // TODO: add profile view:
-                    // mainView.addComponents(new ProfileView());
+                    mainView.addComponents(new ProfileView(userService, loggedUser, passwordEncoder));
                 }
         );
 
@@ -65,10 +79,12 @@ public class MainView extends UI {
         menu.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
 
         topBar.addComponent(menu);
+        topBar.setHeightUndefined();
 
         root.addComponents(topBar, mainView);
         root.setComponentAlignment(topBar, Alignment.TOP_CENTER);
-        root.setSizeFull();
+        root.setComponentAlignment(mainView, Alignment.MIDDLE_CENTER);
+        root.setWidth(100, Unit.PERCENTAGE);
         setContent(root);
     }
 }
