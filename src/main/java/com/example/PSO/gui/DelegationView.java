@@ -62,6 +62,9 @@ public class DelegationView extends HorizontalLayout {
         Button saveDelegation = new Button("Save");
         saveDelegation.addClickListener(clickEvent ->
         {
+            chosenDelegation.set(delegationsList.getValue());
+
+            chosenDelegation.get().setId(chosenDelegation.get().getId());
             chosenDelegation.get().setDescription(descriptionTextField.getValue());
             chosenDelegation.get().setDateTimeStart(dateTimeStartDateField.getValue());
             chosenDelegation.get().setDateTimeStop(dateTimeStopDateField.getValue());
@@ -79,7 +82,7 @@ public class DelegationView extends HorizontalLayout {
             chosenDelegation.get().setOtherOutlayPrice(Double.parseDouble(otherOutlayPriceTextField.getValue()));
 
 
-            delegationService.changeDelegation(chosenDelegation.get().getUser().getUid(), chosenDelegation.get());
+            delegationService.changeDelegation(chosenDelegation.get().getId(), chosenDelegation.get());
             delegationListToCB.clear();
             List<Delegation> newListofDelegation = delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid());
             delegationsList.setItems(newListofDelegation);
@@ -89,6 +92,7 @@ public class DelegationView extends HorizontalLayout {
         {
             System.out.println("IMHERE");
             chosenDelegation.set(delegationValueChangeEvent.getValue());
+
             descriptionTextField.setValue(chosenDelegation.get().getDescription()+"");
             dateTimeStartDateField.setValue(chosenDelegation.get().getDateTimeStart());
             dateTimeStopDateField.setValue(chosenDelegation.get().getDateTimeStop());
