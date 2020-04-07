@@ -5,6 +5,7 @@ import com.example.PSO.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,19 +16,26 @@ import java.util.stream.Collectors;
 public class UserService {
     private UserRepo userRepo;
     private DelegationService delegationService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepo userRepo, DelegationService delegationService) {
+    public UserService(UserRepo userRepo, DelegationService delegationService, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.delegationService = delegationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public ResponseEntity<User> registerUser(User user) {
         if (userRepo.findUserByEmail(user.getEmail()).isPresent())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepo.save(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    public User updateUser(User user) {
+        return userRepo.save(user);
     }
 
     public List<User> getAllUser() {
@@ -39,7 +47,7 @@ public class UserService {
         if (user.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        user.get().setPassword(newPassword);
+        user.get().setPassword(passwordEncoder.encode(newPassword));
         User saveUser = userRepo.save(user.get());
         return new ResponseEntity<>(saveUser, HttpStatus.OK);
     }
