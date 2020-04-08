@@ -113,7 +113,7 @@ public class DelegationView extends HorizontalLayout {
         //SAVE LISTENER
         delegationsGrid.getEditor().addSaveListener(editorSaveEvent -> {
             if (editorSaveEvent.getBean().getDateTimeStop().isBefore(editorSaveEvent.getBean().getDateTimeStart())) {
-                Notification.show("STOP DATE cannot be before START DATE", Notification.Type.HUMANIZED_MESSAGE);
+                Notification.show("STOP DATE cannot be before START DATE", Notification.Type.ERROR_MESSAGE);
             } else {
                 delegationService.changeDelegation(editorSaveEvent.getBean().getId(), editorSaveEvent.getBean());
                 delegationsGrid.setItems(delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid()));
