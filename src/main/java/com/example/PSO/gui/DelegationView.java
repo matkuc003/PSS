@@ -50,13 +50,15 @@ public class DelegationView extends HorizontalLayout {
         TextField breakfastNumberTextField = new TextField("breakfastNumber");
         TextField dinnerNumberTextField = new TextField("dinnerNumber");
         TextField supperNumberTextField = new TextField("supperNumber");
+
         ComboBox transportTypeEnum = new ComboBox("transportType");
         transportTypeEnum.setItems(TransportType.values());
-        //transportTypeEnum.setValue(TransportType.valueOf(chosenDelegation.get().getTransportType().toString()));
+
         TextField ticketPriceTextField = new TextField("ticketPrice");
+
         ComboBox autoCapacityEnum = new ComboBox("autoCapacity");
         autoCapacityEnum.setItems(AutoCapacity.values());
-       // autoCapacityEnum.setValue(chosenDelegation.get().getAutoCapacity());
+
         TextField kmTextField = new TextField("km");
         TextField accommodationPriceTextField = new TextField("accommodationPrice");
         TextField otherTicketsPriceTextField = new TextField("otherTicketsPrice");
@@ -87,9 +89,9 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.addColumn(Delegation::getBreakfastNumber).setCaption("BreakfastNumber").setEditorBinding(bindBreakFastNumber);
         delegationsGrid.addColumn(Delegation::getDinnerNumber).setCaption("DinnerNumber").setEditorBinding(bindDinnerNumber);
         delegationsGrid.addColumn(Delegation::getSupperNumber).setCaption("SupperNumber").setEditorBinding(bindSupperNumber);
-        delegationsGrid.addColumn(Delegation::getTransportType).setCaption("TransportType");
+        delegationsGrid.addColumn(Delegation::getTransportType).setCaption("TransportType").setEditorComponent(transportTypeEnum,Delegation::setTransportType);
         delegationsGrid.addColumn(Delegation::getTicketPrice).setCaption("TicketPrice").setEditorBinding(bindTicketPrice);
-        delegationsGrid.addColumn(Delegation::getAutoCapacity).setCaption("AutoCapacity");
+        delegationsGrid.addColumn(Delegation::getAutoCapacity).setCaption("AutoCapacity").setEditorComponent(autoCapacityEnum,Delegation::setAutoCapacity);
         delegationsGrid.addColumn(Delegation::getKm).setCaption("KM").setEditorBinding(bindKM);
         delegationsGrid.addColumn(Delegation::getAccommodationPrice).setCaption("AccommodationPrice").setEditorBinding(bindAccommodationPrice);
         delegationsGrid.addColumn(Delegation::getOtherTicketsPrice).setCaption("OtherTicketsPrice").setEditorBinding(bindOtherTicketsPrice);
