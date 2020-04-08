@@ -6,7 +6,6 @@ import com.example.PSO.models.User;
 import com.example.PSO.repositories.DelegationRepo;
 import com.example.PSO.repositories.RoleRepo;
 import com.example.PSO.repositories.UserRepo;
-import org.apache.tomcat.jni.Local;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -20,10 +19,10 @@ public class StartDataConfig {
         Role r2 = new Role("ROLE_USER");
         r2 = roleRepo.save(r2);
 
-        User u1 = new User("UTP", "Bydgoszcz", "111222333", "Jan", "Kowalski",
-                "jankow@wp.pl", passwordEncoder.encode("111222"));
-        User u2 = new User("UKW", "Bydgoszcz", "555555555", "Andrzej", "Kowalski",
-                "andkow@wp.pl", passwordEncoder.encode("222111"));
+        User u1 = new User("UTP", "Bydgoszcz", "1112223334", "Jan", "Kowalski",
+                "jankow@wp.pl", passwordEncoder.encode("zaq1@WSX"));
+        User u2 = new User("UKW", "Bydgoszcz", "5555555554", "Andrzej", "Kowalski",
+                "andkow@wp.pl", passwordEncoder.encode("zaq1@WSX"));
         Delegation d1 = new Delegation(LocalDate.now(), LocalDate.now().plusDays(5),u1);
         Delegation d2 = new Delegation(LocalDate.now(), LocalDate.now().plusDays(7),u1);
         Delegation d3 = new Delegation(LocalDate.now(), LocalDate.now().plusDays(8),u2);

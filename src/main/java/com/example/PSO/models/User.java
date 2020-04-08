@@ -9,6 +9,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,18 +29,27 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
     @NotNull
+    @Size(min = 3, max = 25)
     private String companyName;
     @NotNull
+    @Size(min = 4)
     private String companyAddress;
     @NotNull
+    @Size(min = 10, max = 10)
     private String companyNip;
     @NotNull
+    @Size(min = 3, max = 20)
     private String name;
     @NotNull
+    @Size(min = 3, max = 20)
     private String lastName;
     @NotNull
+    @NotEmpty
+    @Email
     private String email;
     @NotNull
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
+            message = "Password must be greater than 8 char, have 1 small letter, 1 high letter, 1 digital and 1 special character")
     private String password;
     @Column
     private boolean status = true;
