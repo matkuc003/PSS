@@ -5,17 +5,11 @@ import com.example.PSO.models.Delegation;
 import com.example.PSO.models.TransportType;
 import com.example.PSO.models.User;
 import com.example.PSO.service.DelegationService;
-import com.example.PSO.service.UserService;
-import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.NumberRenderer;
-import org.apache.tomcat.jni.Local;
-import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,12 +17,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class DelegationView extends HorizontalLayout {
     private User loggedUser;
-    private UserService userService;
     private DelegationService delegationService;
 
-    public DelegationView(User loggedUser, UserService userService, DelegationService delegationService) {
+    public DelegationView(User loggedUser,DelegationService delegationService) {
         this.loggedUser = loggedUser;
-        this.userService = userService;
         this.delegationService = delegationService;
         getDelegationView();
     }
@@ -100,7 +92,7 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.addColumn(Delegation::getKm).setCaption("KM").setEditorBinding(bindKM);
         delegationsGrid.addColumn(Delegation::getAccommodationPrice).setCaption("AccommodationPrice").setEditorBinding(bindAccommodationPrice);
         delegationsGrid.addColumn(Delegation::getOtherTicketsPrice).setCaption("OtherTicketsPrice").setEditorBinding(bindOtherTicketsPrice);
-        delegationsGrid.addColumn(Delegation::getOtherOutlayDesc).setCaption("OtherOutlayDesc").setEditorComponent(new TextField(), Delegation::setOtherOutlayDesc);
+        delegationsGrid.addColumn(Delegation::getOtherOutlayDesc).setCaption("OtherOutlayDesc").setEditorComponent(otherOutlayDescTextField, Delegation::setOtherOutlayDesc);
         delegationsGrid.addColumn(Delegation::getOtherOutlayPrice).setCaption("OtherOutlayPrice").setEditorBinding(bindOtherOutlayPrice);
         delegationsGrid.setWidth("100%");
         delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -109,7 +101,7 @@ public class DelegationView extends HorizontalLayout {
             if (LocalDate.now().isBefore(itemClick.getItem().getDateTimeStart())) {
                 System.out.println("Enable");
                 delegationsGrid.getEditor().setEnabled(true);
-            } else if (itemClick.getItem().getDescription() == "New_Delegation") {
+            } else if (itemClick.getItem().getDescription().equals("New_Delegation")) {
                 System.out.println("Enable");
                 delegationsGrid.getEditor().setEnabled(true);
             } else {
@@ -136,29 +128,25 @@ public class DelegationView extends HorizontalLayout {
         Button deleteDelegation = new Button("Delete");
 
         deleteDelegation.addClickListener(clickEvent ->
-        {
-            //TODO validation
-            delegationsGrid.getSelectedItems().stream()
-                    .filter(f ->
-                            {
-                                if (f.getDateTimeStart().isAfter(LocalDate.now())) {
-                                    return true;
-                                } else {
-                                    Notification.show("You can't delete this delegation!", Notification.Type.ERROR_MESSAGE);
-                                    return false;
+                delegationsGrid.getSelectedItems().stream()
+                        .filter(f ->
+                                {
+                                    if (f.getDateTimeStart().isAfter(LocalDate.now())) {
+                                        return true;
+                                    } else {
+                                        Notification.show("You can't delete this delegation!", Notification.Type.ERROR_MESSAGE);
+                                        return false;
+                                    }
                                 }
-                            }
-                    )
+                        )
 
-                    .forEach(d -> {
-                        delegationService.removeDelegation(loggedUser.getUid(), d.getId());
-                        delegationListToCB.set(delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid()));
-                        delegationsGrid.setItems(delegationListToCB.get());
-                        delegationsGrid.getDataProvider().refreshAll();
-                        Notification.show("Delegation has been deleted", Notification.Type.HUMANIZED_MESSAGE);
-                    });
-
-        });
+                        .forEach(d -> {
+                            delegationService.removeDelegation(loggedUser.getUid(), d.getId());
+                            delegationListToCB.set(delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid()));
+                            delegationsGrid.setItems(delegationListToCB.get());
+                            delegationsGrid.getDataProvider().refreshAll();
+                            Notification.show("Delegation has been deleted", Notification.Type.HUMANIZED_MESSAGE);
+                        }));
         //ADD BUTTON
         Button addDelegation = new Button("Add New");
         addDelegation.addClickListener(clickEvent ->
