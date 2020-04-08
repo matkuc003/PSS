@@ -101,7 +101,7 @@ public class DelegationView extends HorizontalLayout {
             if (LocalDate.now().isBefore(itemClick.getItem().getDateTimeStart())) {
                 System.out.println("Enable");
                 delegationsGrid.getEditor().setEnabled(true);
-            } else if (itemClick.getItem().getDescription().equals("New_Delegation")) {
+            } else if (itemClick.getItem().getDescription()=="New_Delegation") {
                 System.out.println("Enable");
                 delegationsGrid.getEditor().setEnabled(true);
             } else {

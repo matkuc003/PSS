@@ -55,7 +55,6 @@ public class MainView extends UI {
         delegationsButton.setWidth(200, Unit.PIXELS);
         delegationsButton.addClickListener(clickEvent -> {
                     mainView.removeAllComponents();
-                    // TODO: add delegation view
                     mainView.addComponents(new DelegationView(loggedUser,delegationService));
                 }
         );
