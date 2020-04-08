@@ -76,10 +76,6 @@ public class DelegationService {
     }
 
     public List<Delegation> getAllDelByUserOrderByDateStartDesc(long userId) {
-        this.getAllDelegationByUser(userId)
-                .stream()
-                .sorted(Comparator.comparing(Delegation::getDateTimeStart, Comparator.reverseOrder()))
-                .forEach(t-> System.out.println(t.getDateTimeStart().toString()));
         return this.getAllDelegationByUser(userId)
                 .stream()
                 .sorted(Comparator.comparing(Delegation::getDateTimeStart, Comparator.reverseOrder()))
