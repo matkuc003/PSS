@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.TimeZone;
+
 
 @Title("User Panel")
 @SpringUI(path = "/panel")
@@ -35,6 +37,7 @@ public class MainView extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         root = new VerticalLayout();
