@@ -33,8 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().disable();
         http.authorizeRequests().antMatchers("/api/user/register").permitAll()
                 .and().authorizeRequests().antMatchers("/api/user/all").hasRole("ADMIN")
+                .and().authorizeRequests().antMatchers("/api/user/byRole/**").hasRole("ADMIN")
+                .and().authorizeRequests().antMatchers("/api/user/**").authenticated()
                 .and().authorizeRequests().antMatchers("/api/delegation/**").authenticated()
                 .and().authorizeRequests().antMatchers("/panel").authenticated()
+                .and().authorizeRequests().antMatchers("/register").permitAll()
                 .and().formLogin().defaultSuccessUrl("/panel").permitAll()
                 .and().logout().logoutSuccessUrl("/login");
     }
