@@ -34,6 +34,10 @@ public class UserService {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    public Optional<User> getUserByEmail(String email) {
+        return userRepo.findUserByEmail(email);
+    }
+
     public User updateUser(User user) {
         return userRepo.save(user);
     }
