@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/oauth")
@@ -38,7 +39,6 @@ public class OAuthController {
     public void getUserInfo(OAuth2AuthenticationToken authentication, HttpServletResponse response) throws IOException {
         User loggedUser = null;
         OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-
         String userInfoEndpointUri = client.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUri();
 
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {
@@ -46,19 +46,37 @@ public class OAuthController {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken()
                     .getTokenValue());
+            String actualPlatform = client.getClientRegistration().getRegistrationId();
             HttpEntity entity = new HttpEntity("", headers);
             ResponseEntity<Map> mapResponse = restTemplate.exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
             Map userAttributes = mapResponse.getBody();
             Optional<User> userByEmail = userService.getUserByEmail((String) userAttributes.get("email"));
             if(userByEmail.isPresent())
                 loggedUser = userByEmail.get();
-            else {
-                loggedUser = new User("NO DATA", "NO DATA", "0000000000", userAttributes.get("given_name").toString(), userAttributes.get("family_name").toString(),
-                        userAttributes.get("email").toString(), "zaq1@WSX");
+            else if(client.getClientRegistration().getRegistrationId().equals("google")) {
+                System.out.println("jestem google");
+                Stream.of(userAttributes).forEach(System.out::println);
+                if(Stream.of(userAttributes).anyMatch(ua->ua.get("family_name")!=null)) {
+                    loggedUser = new User("NO DATA", "NO DATA", "0000000000", userAttributes.get("given_name").toString(), userAttributes.get("family_name").toString(),
+                            userAttributes.get("email").toString(), "zaq1@WSX");
+                }
+                else{
+                    loggedUser = new User("NO DATA", "NO DATA", "0000000000", userAttributes.get("given_name").toString(), "NO_DATA",
+                            userAttributes.get("email").toString(), "zaq1@WSX");
+                }
                 ResponseEntity<User> registerResponse = userService.registerUser(loggedUser);
                 if (!registerResponse.getStatusCode().is2xxSuccessful())
                     response.sendRedirect("/login");
             }
+            else if(client.getClientRegistration().getRegistrationId().equals("facebook")) {
+                System.out.println("jestem fb");
+                    String[] names = userAttributes.get("name").toString().split(" ");
+                    loggedUser = new User("NO DATA", "NO DATA", "0000000000", names[0], names[1],
+                            userAttributes.get("email").toString(), "zaq1@WSX");
+                    ResponseEntity<User> registerResponse = userService.registerUser(loggedUser);
+                    if (!registerResponse.getStatusCode().is2xxSuccessful())
+                        response.sendRedirect("/login");
+                }
             Authentication auth = new UsernamePasswordAuthenticationToken(loggedUser, "", loggedUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
             response.sendRedirect("/panel");
