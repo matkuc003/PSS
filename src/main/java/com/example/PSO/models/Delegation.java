@@ -37,6 +37,7 @@ public class Delegation {
     private Double otherTicketsPrice=0.0;
     private String otherOutlayDesc;
     private Double otherOutlayPrice=0.0;
+    private Confirmation confirmation = Confirmation.NONE;
 
     @ManyToOne
     @JsonIgnore

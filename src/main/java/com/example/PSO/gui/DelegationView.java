@@ -1,9 +1,6 @@
 package com.example.PSO.gui;
 
-import com.example.PSO.models.AutoCapacity;
-import com.example.PSO.models.Delegation;
-import com.example.PSO.models.TransportType;
-import com.example.PSO.models.User;
+import com.example.PSO.models.*;
 import com.example.PSO.service.DelegationService;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.converter.StringToDoubleConverter;
@@ -18,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DelegationView extends HorizontalLayout {
     private User loggedUser;
     private DelegationService delegationService;
+
+    private Grid<Delegation> delegationsGrid;
 
     public DelegationView(User loggedUser,DelegationService delegationService) {
         this.loggedUser = loggedUser;
@@ -59,8 +58,9 @@ public class DelegationView extends HorizontalLayout {
         TextField otherOutlayPriceTextField = new TextField("otherOutlayPrice");
         DateField startDateField = new DateField("Start Date");
         DateField stopDateField = new DateField("Stop Date");
+
         //GRID
-        Grid<Delegation> delegationsGrid = new Grid<>();
+        delegationsGrid = new Grid<>();
         delegationsGrid.getEditor().setEnabled(true);
         delegationsGrid.setItems(delegationListToCB.get());
 
@@ -93,19 +93,16 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.addColumn(Delegation::getOtherTicketsPrice).setCaption("OtherTicketsPrice").setEditorBinding(bindOtherTicketsPrice);
         delegationsGrid.addColumn(Delegation::getOtherOutlayDesc).setCaption("OtherOutlayDesc").setEditorComponent(otherOutlayDescTextField, Delegation::setOtherOutlayDesc);
         delegationsGrid.addColumn(Delegation::getOtherOutlayPrice).setCaption("OtherOutlayPrice").setEditorBinding(bindOtherOutlayPrice);
+        delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
+        delegationsGrid.addComponentColumn(this::buildSendConfirmBtn);
         delegationsGrid.setWidth("100%");
         delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         delegationsGrid.addItemClickListener(itemClick -> {
-            if (LocalDate.now().isBefore(itemClick.getItem().getDateTimeStart())) {
-                System.out.println("Enable");
-                delegationsGrid.getEditor().setEnabled(true);
-            } else if (itemClick.getItem().getDescription()=="New_Delegation") {
-                System.out.println("Enable");
-                delegationsGrid.getEditor().setEnabled(true);
-            } else {
-                System.out.println("Disable");
+            if (itemClick.getItem().getConfirmation().equals(Confirmation.NOT_CONFIRM)) {
                 delegationsGrid.getEditor().setEnabled(false);
+            } else {
+                delegationsGrid.getEditor().setEnabled(true);
             }
         });
 
@@ -161,4 +158,23 @@ public class DelegationView extends HorizontalLayout {
         settingFormLayout.addComponents(delegationsGrid, horizontaLayout);
         addComponent(settingFormLayout);
     }
+
+    private AbstractComponent buildSendConfirmBtn(Delegation d) {
+        if(d.getConfirmation().equals(Confirmation.NOT_CONFIRM) ) {
+            return new Label();
+        } else {
+            Button button = new Button((d.getConfirmation().equals(Confirmation.NONE)) ? "Send confirm" : "Revoke confirm");
+            button.addClickListener(e ->  {
+                if (d.getConfirmation().equals(Confirmation.NONE))
+                    d.setConfirmation(Confirmation.WAITING_FOR_CONFIRM);
+                else
+                    d.setConfirmation(Confirmation.NONE);
+                delegationService.changeDelegation(d.getId(), d);
+                delegationsGrid.setItems(delegationService.getAllDelByUserOrderByDateStartDesc(loggedUser.getUid()));
+                delegationsGrid.getDataProvider().refreshAll();
+            });
+            return button;
+        }
+    }
+
 }
