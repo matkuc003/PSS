@@ -37,7 +37,9 @@ public class UserService {
     public Optional<User> getUserByEmail(String email) {
         return userRepo.findUserByEmail(email);
     }
-
+    public Optional<User> getUserById(Long id) {
+        System.out.println("maselko");return userRepo.findById(id);
+    }
     public User updateUser(User user) {
         return userRepo.save(user);
     }

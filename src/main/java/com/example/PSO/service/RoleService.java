@@ -17,4 +17,10 @@ public class RoleService {
     public Role getRoleByName(String name) {
         return roleRepo.findByRoleName(name).orElseThrow();
     }
+    public Role updateRole(Role role){
+        return roleRepo.save(role);
+    }
+    public Role getRoleById(Long id){
+        return roleRepo.getOne(id);
+    }
 }
