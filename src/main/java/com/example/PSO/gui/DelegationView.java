@@ -7,6 +7,7 @@ import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -103,6 +104,7 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
         delegationsGrid.addComponentColumn(this::buildSendConfirmBtn);
         delegationsGrid.addComponentColumn(this::buildPdfBtn).setCaption("PDF");
+        delegationsGrid.addComponentColumn(this::buildPrintBtn).setCaption("Print");
         delegationsGrid.setWidth("100%");
         delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
@@ -192,6 +194,23 @@ public class DelegationView extends HorizontalLayout {
         StreamResource myResource = pdfService.getPdfStream(d);
         FileDownloader fileDownloader = new FileDownloader(myResource);
         fileDownloader.extend(button);
+        return button;
+    }
+
+    private Button buildPrintBtn(Delegation d) {
+        Button button = new Button(VaadinIcons.PRINT);
+        button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+        button.addClickListener(e -> {
+            StreamResource resource = pdfService.getPdfStream(d);
+            resource.setMIMEType("application/pdf");
+            resource.getStream().setParameter(
+                    "Content-Disposition",
+                    "attachment; filename=delegation.pdf");
+
+            BrowserWindowOpener opener = new BrowserWindowOpener(resource);
+            opener.extend(button);
+        });
+
         return button;
     }
 
