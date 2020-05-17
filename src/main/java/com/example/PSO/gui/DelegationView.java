@@ -2,11 +2,16 @@ package com.example.PSO.gui;
 
 import com.example.PSO.models.*;
 import com.example.PSO.service.DelegationService;
+import com.example.PSO.service.PdfService;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,12 +20,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DelegationView extends HorizontalLayout {
     private User loggedUser;
     private DelegationService delegationService;
+    private PdfService pdfService;
 
     private Grid<Delegation> delegationsGrid;
 
-    public DelegationView(User loggedUser,DelegationService delegationService) {
+    public DelegationView(User loggedUser,DelegationService delegationService, PdfService pdfService) {
         this.loggedUser = loggedUser;
         this.delegationService = delegationService;
+        this.pdfService = pdfService;
         getDelegationView();
     }
 
@@ -95,6 +102,7 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.addColumn(Delegation::getOtherOutlayPrice).setCaption("OtherOutlayPrice").setEditorBinding(bindOtherOutlayPrice);
         delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
         delegationsGrid.addComponentColumn(this::buildSendConfirmBtn);
+        delegationsGrid.addComponentColumn(this::buildPdfBtn).setCaption("PDF");
         delegationsGrid.setWidth("100%");
         delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
@@ -175,6 +183,16 @@ public class DelegationView extends HorizontalLayout {
             });
             return button;
         }
+    }
+
+    private Button buildPdfBtn(Delegation d) {
+        Button button = new Button(VaadinIcons.FILE_TEXT_O);
+        button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+
+        StreamResource myResource = pdfService.getPdfStream(d);
+        FileDownloader fileDownloader = new FileDownloader(myResource);
+        fileDownloader.extend(button);
+        return button;
     }
 
 }

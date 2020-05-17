@@ -2,6 +2,7 @@ package com.example.PSO.gui;
 
 import com.example.PSO.models.User;
 import com.example.PSO.service.DelegationService;
+import com.example.PSO.service.PdfService;
 import com.example.PSO.service.UserService;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -22,12 +23,14 @@ public class MainView extends UI {
     private UserService userService;
     private DelegationService delegationService;
     private PasswordEncoder passwordEncoder;
+    private PdfService pdfService;
 
     @Autowired
-    public MainView(UserService userService, DelegationService delegationService, PasswordEncoder passwordEncoder) {
+    public MainView(UserService userService, DelegationService delegationService, PasswordEncoder passwordEncoder, PdfService pdfService) {
         this.userService = userService;
         this.delegationService = delegationService;
         this.passwordEncoder = passwordEncoder;
+        this.pdfService = pdfService;
     }
 
     private User loggedUser;
@@ -58,7 +61,7 @@ public class MainView extends UI {
         delegationsButton.setWidth(200, Unit.PIXELS);
         delegationsButton.addClickListener(clickEvent -> {
                     mainView.removeAllComponents();
-                    mainView.addComponents(new DelegationView(loggedUser,delegationService));
+                    mainView.addComponents(new DelegationView(loggedUser,delegationService, pdfService));
                 }
         );
 
