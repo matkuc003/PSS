@@ -109,7 +109,7 @@ public class DelegationView extends HorizontalLayout {
         delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         delegationsGrid.addItemClickListener(itemClick -> {
-            if (itemClick.getItem().getConfirmation().equals(Confirmation.NOT_CONFIRM)) {
+            if (itemClick.getItem().getConfirmation().equals(Confirmation.NOT_CONFIRM) || itemClick.getItem().getConfirmation().equals(Confirmation.CONFIRM)) {
                 delegationsGrid.getEditor().setEnabled(false);
             } else {
                 delegationsGrid.getEditor().setEnabled(true);

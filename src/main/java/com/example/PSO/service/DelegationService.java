@@ -60,6 +60,11 @@ public class DelegationService {
         return new ResponseEntity<>(delegation, HttpStatus.OK);
     }
 
+    public ResponseEntity<Delegation> saveDelegation(Delegation delegation) {
+        Delegation save = delegationRepo.save(delegation);
+        return new ResponseEntity<>(save, HttpStatus.OK);
+    }
+
     public List<Delegation> getAllDelegation() {
         return delegationRepo.findAll();
     }

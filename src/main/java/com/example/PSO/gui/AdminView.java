@@ -37,10 +37,9 @@ public class AdminView extends HorizontalLayout {
         AtomicReference<List<User>> allUsersList= new AtomicReference<>(userService.getAllUser());
         setSpacing(true);
         setSizeFull();
-     //   FormLayout gridLayout = new FormLayout();
-      //  gridLayout.setMargin(new MarginInfo(false, true));
 
         GridLayout mainFormLayout = new GridLayout(3,3);
+        mainFormLayout.setSpacing(true);
         mainFormLayout.setMargin(new MarginInfo(false, true));
         mainFormLayout.setWidth("100%");
 
@@ -50,7 +49,6 @@ public class AdminView extends HorizontalLayout {
         delegationsGrid.getEditor().setEnabled(true);
         mainFormLayout.addComponent(chooseAction,1,0);
         mainFormLayout.setComponentAlignment(chooseAction, Alignment.TOP_CENTER);
-        //chooseAction.setSelectedItem("Users");
         chooseAction.addValueChangeListener(valueChangeEvent -> {
             chooseAction.setEmptySelectionAllowed(false);
 
@@ -94,7 +92,6 @@ public class AdminView extends HorizontalLayout {
             Binder.Binding bindAccommodationPrice = delegationsGrid.getEditor().getBinder().forField(accommodationPriceTextField).withConverter(stringToDoubleConverter).bind(Delegation::getAccommodationPrice, Delegation::setAccommodationPrice);
             Binder.Binding bindOtherTicketsPrice = delegationsGrid.getEditor().getBinder().forField(otherTicketsPriceTextField).withConverter(stringToDoubleConverter).bind(Delegation::getOtherTicketsPrice, Delegation::setOtherTicketsPrice);
             Binder.Binding bindOtherOutlayPrice = delegationsGrid.getEditor().getBinder().forField(otherOutlayPriceTextField).withConverter(stringToDoubleConverter).bind(Delegation::getOtherOutlayPrice, Delegation::setOtherOutlayPrice);
-            Binder.Binding bindUSERID = delegationsGrid.getEditor().getBinder().forField(userIDTextField).withConverter(stringToLongConverter).bind(Delegation->Delegation.getUser().getUid(),(Delegation, aLong) -> delegationService.addDelegation(aLong,Delegation));
 
             //ADDING COLUMN
             delegationsGrid.addColumn(Delegation::getDescription).setCaption("Description").setEditorComponent(new TextField(), Delegation::setDescription);
@@ -112,7 +109,7 @@ public class AdminView extends HorizontalLayout {
             delegationsGrid.addColumn(Delegation::getOtherTicketsPrice).setCaption("OtherTicketsPrice").setEditorBinding(bindOtherTicketsPrice);
             delegationsGrid.addColumn(Delegation::getOtherOutlayDesc).setCaption("OtherOutlayDesc").setEditorComponent(otherOutlayDescTextField, Delegation::setOtherOutlayDesc);
             delegationsGrid.addColumn(Delegation::getOtherOutlayPrice).setCaption("OtherOutlayPrice").setEditorBinding(bindOtherOutlayPrice);
-            delegationsGrid.addColumn(Delegation->Delegation.getUser().getUid()).setCaption("USER_ID").setEditorBinding(bindUSERID);
+            delegationsGrid.addComponentColumn(this::buildUserColumn).setCaption("User");
             delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
             delegationsGrid.addComponentColumn(this::buildConfirmButton);
              delegationsGrid.addComponentColumn(this::buildDeniedButton);
@@ -147,7 +144,7 @@ public class AdminView extends HorizontalLayout {
             usersGrid.addColumn(User::getName).setCaption("Name");
             usersGrid.addColumn(User::getLastName).setCaption("Last Name");
             usersGrid.addColumn(User::getEmail).setCaption("Email");
-            usersGrid.addColumn(User::getPassword).setCaption("Password");
+//            usersGrid.addColumn(User::getPassword).setCaption("Password");
             usersGrid.addColumn(User::getRegistrationDate).setCaption("Registration Date");
             usersGrid.addColumn(User::getRoles).setCaption("ROLES");
             usersGrid.addComponentColumn(this::buildCheckBox).setCaption("Admin");
@@ -170,13 +167,13 @@ public class AdminView extends HorizontalLayout {
             if(chooseAction.getValue().equals("Users")) {
                 usersGrid.getSelectedItems().forEach(selectedUser ->
                 {
-               delegationService.getAllDelegationByUser(selectedUser.getUid()).forEach(de->
-               {de.setUser(null);
-                delegationService.changeDelegation(de.getId(),de);
-               });
-               selectedUser.setDelegations(null);
-                userService.updateUser(selectedUser);
-                userService.deleteUserById(selectedUser.getUid());
+                   delegationService.getAllDelegationByUser(selectedUser.getUid()).forEach(de-> {
+                       de.setUser(null);
+                       delegationService.saveDelegation(de);
+                   });
+                   selectedUser.setDelegations(null);
+                   userService.updateUser(selectedUser);
+                   userService.deleteUserById(selectedUser.getUid());
                 });
 
                 allUsersList.set(userService.getAllUser());
@@ -195,9 +192,8 @@ public class AdminView extends HorizontalLayout {
                 Notification.show("Delegations has been deleted", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
-
         mainFormLayout.addComponent(deleteUserButton,1,2);
-
+        mainFormLayout.setComponentAlignment(deleteUserButton, Alignment.MIDDLE_CENTER);
 
         addComponents(mainFormLayout);
     }
@@ -281,6 +277,13 @@ public class AdminView extends HorizontalLayout {
             });
             return button;
         }
+    }
+
+    private Label buildUserColumn(Delegation d) {
+        if(d.getUser() == null)
+            return new Label();
+        else
+            return new Label(d.getUser().getName() + " " + d.getUser().getLastName());
     }
 
 }
