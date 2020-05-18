@@ -21,7 +21,8 @@ public class AdminView extends HorizontalLayout {
     private DelegationService delegationService;
     private RoleService roleService;
     private User loggedUser;
-
+    private Grid<Delegation> delegationsGrid = new Grid<>();
+    private Grid<User> usersGrid = new Grid<>();
     public AdminView(UserService userService, DelegationService delegationService, RoleService roleService,User loggedUser) {
         this.userService = userService;
         this.delegationService=delegationService;
@@ -45,8 +46,7 @@ public class AdminView extends HorizontalLayout {
 
         ComboBox chooseAction = new ComboBox();
         chooseAction.setItems("Users","Delegations");
-        Grid<Delegation> delegationsGrid = new Grid<>();
-        Grid<User> usersGrid = new Grid<>();
+
         delegationsGrid.getEditor().setEnabled(true);
         mainFormLayout.addComponent(chooseAction,1,0);
         mainFormLayout.setComponentAlignment(chooseAction, Alignment.TOP_CENTER);
@@ -112,9 +112,10 @@ public class AdminView extends HorizontalLayout {
             delegationsGrid.addColumn(Delegation::getOtherTicketsPrice).setCaption("OtherTicketsPrice").setEditorBinding(bindOtherTicketsPrice);
             delegationsGrid.addColumn(Delegation::getOtherOutlayDesc).setCaption("OtherOutlayDesc").setEditorComponent(otherOutlayDescTextField, Delegation::setOtherOutlayDesc);
             delegationsGrid.addColumn(Delegation::getOtherOutlayPrice).setCaption("OtherOutlayPrice").setEditorBinding(bindOtherOutlayPrice);
-            delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
             delegationsGrid.addColumn(Delegation->Delegation.getUser().getUid()).setCaption("USER_ID").setEditorBinding(bindUSERID);
-          //  delegationsGrid.addComponentColumn(this::buildSendConfirmBtn);
+            delegationsGrid.addColumn(Delegation::getConfirmation).setCaption("Confirmation");
+            delegationsGrid.addComponentColumn(this::buildConfirmButton);
+             delegationsGrid.addComponentColumn(this::buildDeniedButton);
             delegationsGrid.setWidth("250%");
             delegationsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
@@ -167,10 +168,19 @@ public class AdminView extends HorizontalLayout {
         deleteUserButton.addClickListener(clickEvent ->
         {
             if(chooseAction.getValue().equals("Users")) {
-                usersGrid.getSelectedItems().forEach(SI -> userService.deleteUserById(SI.getUid()));
+                usersGrid.getSelectedItems().forEach(SI ->
+                {
+                SI.getDelegations().clear();
+                    userService.updateUser(SI);
+                    userService.deleteUserById(SI.getUid());
+                });
+
                 allUsersList.set(userService.getAllUser());
                 usersGrid.setItems(allUsersList.get());
                 usersGrid.getDataProvider().refreshAll();
+                allDelegationList.set(delegationService.getAllDelegation());
+                delegationsGrid.setItems(allDelegationList.get());
+                delegationsGrid.getDataProvider().refreshAll();
                 Notification.show("Users has been deleted", Notification.Type.HUMANIZED_MESSAGE);
             }
             else if(chooseAction.getValue().equals("Delegations")){
@@ -203,15 +213,70 @@ public class AdminView extends HorizontalLayout {
             if(valueCB==false) {
                 System.out.println("uncheck");
                 user.removeRole(role);
+                roleService.updateRole(role);
                 userService.updateUser(user);
+                usersGrid.setItems(userService.getAllUser());
+                usersGrid.getDataProvider().refreshAll();
             }
             else if(valueCB==true) {
                 user.addRole(role);
                 userService.updateUser(user);
+                usersGrid.setItems(userService.getAllUser());
+                usersGrid.getDataProvider().refreshAll();
             }
 
         });
         return checkBox;
+    }
+    private AbstractComponent buildConfirmButton(Delegation d) {
+        if(d.getConfirmation().equals(Confirmation.NONE) ) {
+            return new Label();
+        } else {
+            Button button = new Button();
+             if (d.getConfirmation().equals(Confirmation.CONFIRM)) {
+                button.setCaption("Revoke Confirm");
+            }
+             else{
+                 button.setCaption( "Confirm");
+             };
+            button.addClickListener(e ->  {
+                if (d.getConfirmation().equals(Confirmation.WAITING_FOR_CONFIRM))
+                    d.setConfirmation(Confirmation.CONFIRM);
+                else if(d.getConfirmation().equals(Confirmation.CONFIRM))
+                    d.setConfirmation(Confirmation. WAITING_FOR_CONFIRM);
+                else if(d.getConfirmation().equals(Confirmation.NOT_CONFIRM))
+                    d.setConfirmation(Confirmation. CONFIRM);
+                delegationService.changeDelegation(d.getId(), d);
+                delegationsGrid.setItems(delegationService.getAllDelegation());
+                delegationsGrid.getDataProvider().refreshAll();
+            });
+            return button;
+        }
+    }
+    private AbstractComponent buildDeniedButton(Delegation d) {
+        if(d.getConfirmation().equals(Confirmation.NONE) ) {
+            return new Label();
+        } else {
+            Button button = new Button();
+            if (d.getConfirmation().equals(Confirmation.NOT_CONFIRM)) {
+                button.setCaption("Revoke deny");
+            }
+            else{
+                button.setCaption( "Deny");
+            };
+            button.addClickListener(e ->  {
+                if (d.getConfirmation().equals(Confirmation.WAITING_FOR_CONFIRM))
+                    d.setConfirmation(Confirmation.NOT_CONFIRM);
+                else if(d.getConfirmation().equals(Confirmation.NOT_CONFIRM))
+                    d.setConfirmation(Confirmation. WAITING_FOR_CONFIRM);
+                else if(d.getConfirmation().equals(Confirmation.CONFIRM))
+                    d.setConfirmation(Confirmation. NOT_CONFIRM);
+                delegationService.changeDelegation(d.getId(), d);
+                delegationsGrid.setItems(delegationService.getAllDelegation());
+                delegationsGrid.getDataProvider().refreshAll();
+            });
+            return button;
+        }
     }
 
 }

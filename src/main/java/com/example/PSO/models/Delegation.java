@@ -39,7 +39,7 @@ public class Delegation {
     private Double otherOutlayPrice=0.0;
     private Confirmation confirmation = Confirmation.NONE;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @ToString.Exclude
     private User user;

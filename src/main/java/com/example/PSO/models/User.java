@@ -61,7 +61,9 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "uid"),
             inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName ="rid"))
     private Set<Role> roles = new HashSet<>();
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+
+    //toooo
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE,CascadeType.DETACH})
     private List<Delegation> delegations;
 
     public void addRole(Role role) {
@@ -70,8 +72,10 @@ public class User implements UserDetails {
 }
 
     public void removeRole(Role role) {
+        this.roles.forEach(System.out::println);
         this.roles.remove(this.roles.stream().filter(r -> r.getRid().equals(role.getRid())).findFirst().get());
         role.getUsers().remove(role.getUsers().stream().filter(u -> u.getUid().equals(this.uid)).findFirst().get());
+        this.roles.forEach(System.out::println);
     }
 
     public User(String companyName, String companyAddress, String companyNip, String name, String lastName, String email, String password) {
