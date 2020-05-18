@@ -70,9 +70,8 @@ public class User implements UserDetails {
 }
 
     public void removeRole(Role role) {
-        this.roles.remove(role);
-        roles.forEach(System.out::println);
-        role.getUsers().remove(this);
+        this.roles.remove(this.roles.stream().filter(r -> r.getRid().equals(role.getRid())).findFirst().get());
+        role.getUsers().remove(role.getUsers().stream().filter(u -> u.getUid().equals(this.uid)).findFirst().get());
     }
 
     public User(String companyName, String companyAddress, String companyNip, String name, String lastName, String email, String password) {
