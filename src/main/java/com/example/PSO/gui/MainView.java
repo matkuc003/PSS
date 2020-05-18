@@ -1,5 +1,6 @@
 package com.example.PSO.gui;
 
+import com.example.PSO.models.Role;
 import com.example.PSO.models.User;
 import com.example.PSO.service.DelegationService;
 import com.example.PSO.service.PdfService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
 import java.util.TimeZone;
 
 
@@ -96,12 +98,27 @@ public class MainView extends UI {
         signOutButton.setWidth(150, Unit.PIXELS);
         signOutButton.addClickListener(clickEvent -> getUI().getPage().setLocation("/logout"));
 
-        menu.addComponents(delegationsButton, profileButton,adminButton, signOutButton);
+        Optional<Role> role_user = loggedUser.getRoles().stream().filter(r -> r.getRoleName().equals("ROLE_USER")).findAny();
+        Optional<Role> role_admin = loggedUser.getRoles().stream().filter(r -> r.getRoleName().equals("ROLE_ADMIN")).findAny();
+        if(role_user.isPresent() && role_admin.isPresent()) {
+            menu.addComponents(delegationsButton, profileButton,adminButton, signOutButton);
+            menu.setComponentAlignment(delegationsButton, Alignment.MIDDLE_LEFT);
+            menu.setComponentAlignment(profileButton, Alignment.MIDDLE_CENTER);
+            menu.setComponentAlignment(adminButton, Alignment.TOP_RIGHT);
+            menu.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
+        } else if (role_user.isPresent()) {
+            menu.addComponents(delegationsButton, profileButton, signOutButton);
+            menu.setComponentAlignment(delegationsButton, Alignment.MIDDLE_LEFT);
+            menu.setComponentAlignment(profileButton, Alignment.MIDDLE_CENTER);
+            menu.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
+        } else if (role_admin.isPresent()) {
+            menu.addComponents(adminButton, signOutButton);
+            menu.setComponentAlignment(adminButton, Alignment.MIDDLE_LEFT);
+            menu.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
+        } else {
+            System.out.println("You are not authorized to use the service");
+        }
         menu.setSizeFull();
-        menu.setComponentAlignment(delegationsButton, Alignment.MIDDLE_LEFT);
-        menu.setComponentAlignment(profileButton, Alignment.MIDDLE_CENTER);
-        menu.setComponentAlignment(adminButton, Alignment.TOP_RIGHT);
-        menu.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
 
         topBar.addComponent(menu);
         topBar.setHeightUndefined();
