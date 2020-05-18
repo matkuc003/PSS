@@ -63,7 +63,7 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
     //toooo
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE,CascadeType.PERSIST, CascadeType.MERGE,CascadeType.DETACH})
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Delegation> delegations;
 
     public void addRole(Role role) {

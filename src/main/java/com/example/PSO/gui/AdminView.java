@@ -50,9 +50,9 @@ public class AdminView extends HorizontalLayout {
         delegationsGrid.getEditor().setEnabled(true);
         mainFormLayout.addComponent(chooseAction,1,0);
         mainFormLayout.setComponentAlignment(chooseAction, Alignment.TOP_CENTER);
-        chooseAction.setSelectedItem("Users");
+        //chooseAction.setSelectedItem("Users");
         chooseAction.addValueChangeListener(valueChangeEvent -> {
-
+            chooseAction.setEmptySelectionAllowed(false);
 
         if(chooseAction.getValue().equals("Delegations")){
             //Converters
@@ -168,11 +168,15 @@ public class AdminView extends HorizontalLayout {
         deleteUserButton.addClickListener(clickEvent ->
         {
             if(chooseAction.getValue().equals("Users")) {
-                usersGrid.getSelectedItems().forEach(SI ->
+                usersGrid.getSelectedItems().forEach(selectedUser ->
                 {
-                SI.getDelegations().clear();
-                    userService.updateUser(SI);
-                    userService.deleteUserById(SI.getUid());
+               delegationService.getAllDelegationByUser(selectedUser.getUid()).forEach(de->
+               {de.setUser(null);
+                delegationService.changeDelegation(de.getId(),de);
+               });
+               selectedUser.setDelegations(null);
+                userService.updateUser(selectedUser);
+                userService.deleteUserById(selectedUser.getUid());
                 });
 
                 allUsersList.set(userService.getAllUser());
